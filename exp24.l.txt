@@ -1,0 +1,61 @@
+%{
+#include <stdio.h>
+
+int comment_count = 0;
+FILE *out;
+%}
+
+%%
+
+"//".*              {
+                        comment_count++;
+                     }
+
+"/*"([^*]|\*+[^*/])*\*+"/" {
+                        comment_count++;
+                     }
+
+\n                  {
+                        fputc('\n', out);
+                     }
+
+.                   {
+                        fputc(yytext[0], out);
+                     }
+
+%%
+
+int main()
+{
+    yyin = fopen("input.c", "r");
+    out = fopen("output.c", "w");
+
+    if (yyin == NULL)
+    {
+        printf("Error: Cannot open input.c\n");
+        return 1;
+    }
+
+    if (out == NULL)
+    {
+        printf("Error: Cannot create output.c\n");
+        fclose(yyin);
+        return 1;
+    }
+
+    yylex();
+
+    fclose(yyin);
+    fclose(out);
+
+    printf("Number of comments = %d\n", comment_count);
+    printf("Comments eliminated successfully.\n");
+    printf("Output written to output.c\n");
+
+    return 0;
+}
+
+int yywrap()
+{
+    return 1;
+}
