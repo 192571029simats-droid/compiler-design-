@@ -1,0 +1,27 @@
+%{
+#include <stdio.h>
+int line_no = 1;
+%}
+
+%%
+\n      {
+            printf("\n%4d  ", ++line_no);
+          }
+
+.       {
+            printf("%s", yytext);
+          }
+%%
+
+int main()
+{
+    printf("Line Numbered C Program:\n\n");
+    printf("%4d  ", line_no);
+    yylex();
+    return 0;
+}
+
+int yywrap()
+{
+    return 1;
+}
